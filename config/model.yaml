@@ -1,0 +1,34 @@
+target: label_fraud
+features:
+  numeric:
+    - amount
+    - last_tx_delta_minutes
+    - tx_count_1h
+    - tx_count_24h
+    - amount_mean_24h
+    - geo_velocity_kmph_prev
+  categorical:
+    - channel
+    - device_id
+    - merchant_risk_tier
+    - brand
+model:
+  algo: rf
+  lr:
+    C: 1.0
+    max_iter: 200
+    class_weight: balanced
+  rf:
+    n_estimators: 200
+    max_depth: 8
+    min_samples_leaf: 5
+    class_weight: balanced
+  xgb:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.1
+    subsample: 0.8
+    colsample_bytree: 0.8
+split:
+  strategy: time
+  val_days: 7

@@ -1,0 +1,34 @@
+rules:
+  - name: high_value
+    description: Flag transactions above amount threshold
+    active: true
+    params:
+      amount_threshold: 1000.0
+
+  - name: rapid_fire
+    description: More than N tx in M minutes per card
+    active: true
+    params:
+      tx_per_min_threshold: 5
+      window_minutes: 2
+
+  - name: geo_velocity
+    description: Speed between consecutive tx exceeds threshold (km/h)
+    active: true
+    params:
+      geo_velocity_kmph: 1000
+
+  - name: high_risk_mcc
+    description: Merchant category is high risk
+    active: true
+    params:
+      high_risk_mcc: [4829, 5967, 7995, 6051]
+
+  - name: night_owl_cnp
+    description: Card-not-present during unusual hours (00:00-05:00 local)
+    active: true
+    params:
+      cnp_channels: [ECOM]
+      start_hour: 0
+      end_hour: 5
+

@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: fraud_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-fraude2e}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: fraud_app
+    env_file: .env
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    depends_on:
+      - db
+    ports:
+      - "${DASH_PORT:-8050}:8050"
+    command: tail -f /dev/null
+
+  airflow-init:
+    image: apache/airflow:2.8.4
+    container_name: fraud_airflow_init
+    env_file: airflow/airflow.env
+    depends_on:
+      - db
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./:/opt/fraud-e2e
+    command: bash -c "pip install -r /opt/fraud-e2e/requirements.txt && airflow db init && airflow users create --username airflow --password airflow --firstname Air --lastname Flow --role Admin --email airflow@example.com || true"
+
+  airflow-webserver:
+    image: apache/airflow:2.8.4
+    container_name: fraud_airflow_web
+    restart: unless-stopped
+    env_file: airflow/airflow.env
+    depends_on:
+      - airflow-init
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./:/opt/fraud-e2e
+    ports:
+      - "8080:8080"
+    command: bash -c "pip install -r /opt/fraud-e2e/requirements.txt && airflow webserver"
+
+  airflow-scheduler:
+    image: apache/airflow:2.8.4
+    container_name: fraud_airflow_sched
+    restart: unless-stopped
+    env_file: airflow/airflow.env
+    depends_on:
+      - airflow-init
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./:/opt/fraud-e2e
+    command: bash -c "pip install -r /opt/fraud-e2e/requirements.txt && airflow scheduler"
+
+volumes:
+  db_data:

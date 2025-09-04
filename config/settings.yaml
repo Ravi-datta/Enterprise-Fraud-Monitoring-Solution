@@ -1,0 +1,37 @@
+app:
+  timezone: ${TIMEZONE:America/New_York}
+  seed: ${SEED:42}
+  dashboard_port: ${DASH_PORT:8050}
+  batch_size: ${BATCH_SIZE:5000}
+  alert_threshold: ${ALERT_THRESHOLD:0.9}
+
+database:
+  host: ${POSTGRES_HOST:localhost}
+  port: ${POSTGRES_PORT:5432}
+  user: ${POSTGRES_USER:postgres}
+  password: ${POSTGRES_PASSWORD:postgres}
+  db: ${POSTGRES_DB:fraude2e}
+  driver: postgresql+psycopg2
+  # Optional: if DATABASE_URL set, it overrides above
+
+generation:
+  num_customers: 5000
+  accounts_per_customer_mean: 1.2
+  cards_per_account_mean: 1.4
+  merchants: 1500
+  fraud_ratio: 0.01
+  tx_channels: [POS, ECOM, ATM]
+  regions: [NORTHEAST, MIDWEST, SOUTH, WEST]
+
+rules:
+  default_active: true
+
+ml:
+  model_dir: artifacts/models
+  plot_dir: artifacts/plots
+  metrics_dir: artifacts/metrics
+  model_name: baseline
+  split:
+    strategy: time
+    val_days: 7
+
