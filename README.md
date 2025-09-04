@@ -1,4 +1,4 @@
-# fraud-e2e — End-to-End Fraud Detection & Analytics
+# Enterprise Fraud Monitoring Solution(End-to-End Fraud Detection & Analytics)
 
 An end-to-end, local-first fraud analytics system: synthetic transaction generation, YAML-driven rules, ML scoring, reporting, an Airflow-powered daily pipeline, and a Plotly Dash dashboard. Designed for quick evaluation and realistic demos with PostgreSQL 15 and Python 3.11.
 
